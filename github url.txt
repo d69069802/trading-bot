@@ -1,0 +1,5 @@
+https://github.com/d69069802/trading-bot
+
+
+git remote add origin https://github.com/d69069802/trading-bot
+https://github.com/d69069802/flask-tradingview-alpaca

@@ -1,0 +1,18 @@
+Service ID
+srv-d7f1l5dckfvc739rm9qg
+
+live URL
+https://flask-tradingview-alpaca.onrender.com
+
+webhook endpoint
+https://flask-tradingview-alpaca.onrender.com/webhook
+
+
+curl -X POST http://127.0.0.1:5000/webhook -H "Content-Type: application/json" -H "X-SECRET: IhateMonday" -d '{"symbol":"AAPL","action":"buy","qty":1}'
+
+curl -X POST http://127.0.0.1:5000/webhook -H "Content-Type: application/json" -H "X-SECRET: my_webhook_secret" -d '{"symbol":"AAPL","action":"buy","qty":1}'
+
+curl -X POST http://127.0.0.1:5000/webhook -H "Content-Type: application/json" -d '{"test":"ok"}'
+curl -X POST http://127.0.0.1:5000/webhook -H "Content-Type: application/json" -d "{\"symbol\":\"AAPL\",\"action\":\"buy\",\"qty\":1}"
+
+curl -X POST http://127.0.0.1:5000/webhook -H "Content-Type: application/json" -d '{"symbol":"AAPL","action":"buy","qty":1}'
