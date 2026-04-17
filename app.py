@@ -22,7 +22,15 @@ def home():
     return "Server is running", 200
 
 @app.route("/webhook", methods=["POST"])
+@app.route("/webhook", methods=["POST"])
 def webhook():
+    # ADD THESE TWO LINES FOR DEBUGGING:
+    raw_data = request.get_data(as_text=True)
+    print(f"RAW DATA RECEIVED: '{raw_data}'")
+
+    data = request.get_json(force=True, silent=True)
+    # ... rest of your code
+
     try:
         # 1. Use force=True to ignore Content-Type
         # 2. Use silent=True to prevent a 400 error if JSON is malformed
