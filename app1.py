@@ -5,6 +5,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+print("=== WEBHOOK HIT Apr 17 11am ===")
+
 app = Flask(__name__)
 
 api = tradeapi.REST(
@@ -13,6 +15,9 @@ api = tradeapi.REST(
     os.getenv("BASE_URL"),
     api_version="v2"
 )
+@app.route("/")
+def home():
+    return "NEW VERSION"
 
 @app.route("/", methods=["GET"])
 def home():
@@ -21,6 +26,8 @@ def home():
 @app.route("/webhook", methods=["POST"])
 def webhook():
     data = request.get_json(force=True)
+    if data is None:
+    return {"error": "invalid JSON"}, 400
 
     print("Incoming data:", data)
 

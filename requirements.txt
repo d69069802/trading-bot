@@ -1,5 +1,6 @@
-flask
-alpaca-trade-api
+flask>=2.0.0,<2.3.0
+alpaca-trade-api>=3.0.0
 gunicorn
 python-dotenv
 requests
+urllib3<2.0.0

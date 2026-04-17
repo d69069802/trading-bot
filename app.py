@@ -1,12 +1,15 @@
 from flask import Flask, request, jsonify
 import alpaca_trade_api as tradeapi
 import os
+import traceback
 from dotenv import load_dotenv
 
+# Load environment variables
 load_dotenv()
 
 app = Flask(__name__)
 
+# Initialize Alpaca API
 api = tradeapi.REST(
     os.getenv("ALPACA_KEY"),
     os.getenv("ALPACA_SECRET"),
@@ -16,52 +19,60 @@ api = tradeapi.REST(
 
 @app.route("/", methods=["GET"])
 def home():
-    return "Server is running"
+    return "Server is running", 200
 
 @app.route("/webhook", methods=["POST"])
 def webhook():
-    data = request.get_json(force=True)
-
-    print("Incoming data:", data)
-
-    symbol = data.get("symbol")
-    action = data.get("action", "").lower()
-    qty = int(data.get("qty", 1))
-
-    if not symbol or not action:
-        return jsonify({"error": "missing data"}), 400
-
     try:
-        if action == "buy":
-            api.submit_order(
+        # 1. Use force=True to ignore Content-Type
+        # 2. Use silent=True to prevent a 400 error if JSON is malformed
+        data = request.get_json(force=True, silent=True)
+
+        if data is None:
+            print("ERROR: Received empty or invalid JSON")
+            return jsonify({"error": "Invalid JSON payload"}), 400
+
+        print("Incoming data:", data)
+
+        # FIX: Check for 'symbol' OR 'ticker' to avoid validation failure
+        symbol = data.get("symbol") or data.get("ticker")
+        action = data.get("action", "").lower()
+        
+        # FIX: Ensure qty is handled safely (converting string to float then int)
+        try:
+            qty_raw = data.get("qty", 1)
+            qty = int(float(qty_raw))
+        except (ValueError, TypeError):
+            qty = 1
+
+        # Validation Check
+        if not symbol or not action:
+            print(f"VALIDATION FAILED: symbol={symbol}, action={action}")
+            return jsonify({"error": "missing symbol or action in JSON"}), 400
+
+        # Execute Trade
+        if action in ["buy", "sell"]:
+            order = api.submit_order(
                 symbol=symbol,
                 qty=qty,
-                side="buy",
+                side=action,
                 type="market",
                 time_in_force="gtc"
             )
-
-        elif action == "sell":
-            api.submit_order(
-                symbol=symbol,
-                qty=qty,
-                side="sell",
-                type="market",
-                time_in_force="gtc"
-            )
-
+            print(f"SUCCESS: {action.upper()} order placed for {symbol}")
+            return jsonify({"status": "order placed", "order_id": order.id}), 200
+        
         else:
+            print(f"ERROR: Invalid action received: {action}")
             return jsonify({"error": "invalid action"}), 400
 
-        return jsonify({"status": "order placed"}), 200
-
     except Exception as e:
-        print("ALPACA ERROR:", str(e))
+        # This provides the full error log in Render so you can see exactly what failed
+        print("CRITICAL ERROR:")
+        print(traceback.format_exc())
         return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
-    print("Starting Flask server...")
-    app.run(host="0.0.0.0", port=5000)
-
-
-
+    # Render uses environment variables for Port, defaulting to 5000
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
