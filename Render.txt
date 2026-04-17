@@ -1,11 +1,13 @@
 Service ID
-srv-d7f1l5dckfvc739rm9qg
+srv-d7fdvdt7vvec73aa5540
 
 live URL
-https://flask-tradingview-alpaca.onrender.com
+old: https://flask-tradingview-alpaca.onrender.com
+https://trading-bot-uq1f.onrender.com
 
-webhook endpoint
-https://flask-tradingview-alpaca.onrender.com/webhook
+webhook endpoint (to be setup in Tradiingview):
+old: https://flask-tradingview-alpaca.onrender.com/webhook
+https://trading-bot-uq1f.onrender.com/webhook
 
 
 curl -X POST http://127.0.0.1:5000/webhook -H "Content-Type: application/json" -H "X-SECRET: IhateMonday" -d '{"symbol":"AAPL","action":"buy","qty":1}'
