@@ -46,11 +46,6 @@ def webhook():
         symbol = data.get("symbol") or data.get("ticker")
         action = data.get("action", "").lower()
         
-        # following 2 lines suggested by ChatGpt
-        symbol = data["ticker"].replace("USD", "")  # XRPUSD → XRP
-        side = data["action"]
-        
-        
         # FIX: Ensure qty is handled safely (converting string to float then int)
         try:
             qty_raw = data.get("qty", 1)
