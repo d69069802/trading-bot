@@ -47,7 +47,8 @@ def webhook():
         action = data.get("action", "").lower()
         
         # following 2 lines suggested by ChatGpt
-        symbol = data["ticker"].replace("USD", "/USD")  # XRPUSD → XRP/USD
+        #symbol = data["ticker"].replace("USD", "/USD")  # XRPUSD → XRP/USD
+        symbol = data["ticker"].strip().upper().replace("USD", "/USD")
         side = data["action"]
         
         
