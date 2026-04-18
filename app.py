@@ -49,14 +49,17 @@ def webhook():
         # following 2 lines suggested by ChatGpt
         #symbol = data["ticker"].replace("USD", "/USD")  # XRPUSD → XRP/USD
         #symbol = data["ticker"].strip().upper().replace("USD", "/USD")
-        
-        raw_ticker = data.get("ticker", "").upper()
 
-        if "USD" in raw_ticker and "/" not in raw_ticker:
-            symbol = raw_ticker.replace("USD", "/USD")
+        print("RAW DATA:", data)
+        raw_symbol = data.get("ticker", "").strip()
+
+        if raw_symbol.endswith("USD") and "/" not in raw_symbol:
+            symbol = raw_symbol[:-3] + "/USD"
         else:
-        symbol = raw_ticker
+            symbol = raw_symbol
 
+        print("Converted symbol:", symbol)
+        
         side = data["action"]
         
         
