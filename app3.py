@@ -61,27 +61,14 @@ def webhook():
         print("Converted symbol:", symbol)
         
         side = data["action"]
-
-        try:
-            position = api.get_position(symbol)
-            position_qty = int(float(position.qty))
-        except:
-            position_qty = 0
-
-        if action == "sell":
-            if position_qty == 0:
-            return jsonify({"status": "no position to sell"}), 200
-    
-        qty = min(qty, position_qty)
+        
         
         # FIX: Ensure qty is handled safely (converting string to float then int)
-        #try:
-        #    qty_raw = data.get("qty", 1)
-        #    qty = int(float(qty_raw))
-        #except (ValueError, TypeError):
-        #    qty = 1
-
-        qty = float(data.get("qty", 1))
+        try:
+            qty_raw = data.get("qty", 1)
+            qty = int(float(qty_raw))
+        except (ValueError, TypeError):
+            qty = 1
 
         # Validation Check
         if not symbol or not action:

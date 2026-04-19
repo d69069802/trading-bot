@@ -18,3 +18,14 @@ curl -X POST http://127.0.0.1:5000/webhook -H "Content-Type: application/json" -
 curl -X POST http://127.0.0.1:5000/webhook -H "Content-Type: application/json" -d "{\"symbol\":\"AAPL\",\"action\":\"buy\",\"qty\":1}"
 
 curl -X POST http://127.0.0.1:5000/webhook -H "Content-Type: application/json" -d '{"symbol":"AAPL","action":"buy","qty":1}'
+
+
+curl -k -X POST https://your-app.onrender.com/webhook -H "Content-Type: application/json" -d '{"id":"1","symbol":"AAPL","side":"buy","qty":1}'
+
+curl -X POST https://your-app.onrender.com/webhook ^
+-H "Content-Type: application/json" ^
+-d "{\"id\":\"1\",\"symbol\":\"AAPL\",\"side\":\"buy\",\"qty\":1}" ^
+--ssl-no-revoke
+
+curl -X POST https://your-app.onrender.com/webhook -H "Content-Type: application/json" -d '{"id":"1","symbol":"AAPL","side":"buy","qty":1}'
+

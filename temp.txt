@@ -1,0 +1,382 @@
+
+After running the following pines cript, it always sends qty as 1.
+Alert set up in Tradingview: 
+{
+    "ticker": "{{ticker}}",
+    "action": "buy",
+    "price": "{{close}}",
+    "time": "{{timenow}}",
+    "interval": "{{interval}}"
+}
+
+
+Pine script:
+//@version=6
+strategy("MA B7a", overlay=true, pyramiding=0)
+
+// === Inputs ===
+maLength   = input.int(50, "MA Length")
+maType     = input.string("EMA", "MA Type", options=["SMA", "EMA"])
+
+belowPct   = input.float(2.0, "Buy % Below MA", step=0.1)
+abovePct   = input.float(2.0, "Sell % Above MA", step=0.1)
+
+buyQty   = input.float(1.0, "Base buy Qty", step=0.1)
+sellQty   = input.float(1.0, "Base sell Qty", step=0.1)
+
+var float actualbuyQty = 0
+var float actualsellQty = 0
+
+qtyMultiplier    = input.string("N", "Multiplier", options=["Y", "N"])
+
+var float prevHighestClose = na
+conditionhigherClose = close > prevHighestClose
+
+var float prevLowerstClose = na
+conditionlowerClose = close < prevLowerstClose
+
+var float totbuyQty = 0
+var float totsellQty = 0
+
+belowPct1   = 2 * belowPct
+abovePct1   = 2 * abovePct 
+
+belowPct2   = 2.5 * belowPct
+abovePct2   = 2.5 * abovePct 
+
+belowPct3   = 3 * belowPct
+abovePct3   = 3 * abovePct 
+
+belowPct4   = 3.5 * belowPct
+abovePct4   = 3.5 * abovePct 
+
+belowPct5   = 4 * belowPct
+abovePct5   = 4 * abovePct 
+
+belowPct6   = 4.5 * belowPct
+abovePct6   = 4.5 * abovePct 
+
+belowPct7   = 5 * belowPct
+abovePct7   = 5 * abovePct 
+
+belowPct8   = 6 * belowPct
+abovePct8   = 6 * abovePct 
+
+belowPct9   = 6.5 * belowPct
+abovePct9   = 6.5 * abovePct 
+
+// === Moving Average ===
+ma = maType == "SMA" ? ta.sma(close, maLength) : ta.ema(close, maLength)
+
+// === Deviation ===
+pctBelow = ((ma - close) / ma) * 100
+pctAbove = ((close - ma) / ma) * 100
+
+// === Conditions ===
+belowCond = pctBelow >= belowPct
+aboveCond = pctAbove >= abovePct
+
+belowCond1 = pctBelow >= belowPct1
+aboveCond1 = pctAbove >= abovePct1
+
+belowCond2 = pctBelow >= belowPct2
+aboveCond2 = pctAbove >= abovePct2
+
+belowCond3 = pctBelow >= belowPct3
+aboveCond3 = pctAbove >= abovePct3
+
+belowCond4 = pctBelow >= belowPct4
+aboveCond4 = pctAbove >= abovePct4
+
+belowCond5 = pctBelow >= belowPct5
+aboveCond5 = pctAbove >= abovePct5
+
+belowCond6 = pctBelow >= belowPct6
+aboveCond6 = pctAbove >= abovePct6
+
+belowCond7 = pctBelow >= belowPct7
+aboveCond7 = pctAbove >= abovePct7
+
+belowCond8 = pctBelow >= belowPct8
+aboveCond8 = pctAbove >= abovePct8
+
+belowCond9 = pctBelow >= belowPct9
+aboveCond9 = pctAbove >= abovePct9
+
+//buySignal  = belowCond and not belowCond[1] and not belowCond1[1] and not belowCond[2] and not belowCond1[2] and not belowCond[3] and not belowCond1[3] 
+//sellSignal = aboveCond and not aboveCond[1] and not aboveCond1[1] and not aboveCond[2] and not aboveCond1[2] and not aboveCond[3] and not aboveCond1[3] 
+
+buySignal  = belowCond and not belowCond[1] and close < prevLowerstClose * 0.9995
+sellSignal = aboveCond and not aboveCond[1] and close > prevHighestClose * 1.0005
+
+buySignal1  = belowCond1 and not belowCond1[1] and not belowCond2[1] and close < prevLowerstClose * 0.9995
+sellSignal1 = aboveCond1 and not aboveCond1[1] and not aboveCond2[1] and close > prevHighestClose  * 1.0005
+
+buySignal2  = belowCond2 and not belowCond2[1] and not belowCond3[1] and close < prevLowerstClose * 0.9995
+sellSignal2 = aboveCond2 and not aboveCond2[1] and not aboveCond3[1] and close > prevHighestClose * 1.0005
+
+buySignal3  = belowCond3 and not belowCond3[1] and not belowCond4[1] and close < prevLowerstClose * 0.9995
+sellSignal3 = aboveCond3 and not aboveCond3[1] and not aboveCond4[1] and close > prevHighestClose * 1.0005
+
+buySignal4  = belowCond4 and not belowCond4[1] and not belowCond5[1] and close < prevLowerstClose * 0.9995
+sellSignal4 = aboveCond4 and not aboveCond4[1] and not aboveCond5[1] and close > prevHighestClose * 1.0005
+
+buySignal5  = belowCond5 and not belowCond5[1] and not belowCond6[1] and close < prevLowerstClose * 0.9995
+sellSignal5 = aboveCond5 and not aboveCond5[1] and not aboveCond6[1] and close > prevHighestClose * 1.0005
+
+buySignal6  = belowCond6 and not belowCond6[1] and not belowCond7[1] and close < prevLowerstClose * 0.9995
+sellSignal6 = aboveCond6 and not aboveCond6[1] and not aboveCond7[1] and close > prevHighestClose * 1.0005
+
+buySignal7  = belowCond7 and not belowCond7[1] and not belowCond8[1] and close < prevLowerstClose * 0.9995
+sellSignal7 = aboveCond7 and not aboveCond7[1] and not aboveCond8[1] and close > prevHighestClose * 1.0005
+
+buySignal8  = belowCond8 and not belowCond8[1] and not belowCond9[1] and close < prevLowerstClose * 0.9995
+sellSignal8 = aboveCond8 and not aboveCond8[1] and not aboveCond9[1] and close > prevHighestClose * 1.0005
+
+//if close > ma and close[1] < ma
+//    prevHighestClose := 0
+
+//if close < ma and close[1] > ma
+//    prevLowerstClose := 99999
+
+prevHighestClose := close > ma ? math.max(nz(prevHighestClose, close), close) : na
+prevLowerstClose := close < ma ? math.min(nz(prevLowerstClose, close), close) : na
+
+if conditionhigherClose 
+    prevHighestClose := close
+
+if conditionlowerClose 
+    prevLowerstClose := close
+    
+// === Strategy Entries (optional for backtest) ===
+//MA 7 ref 1
+totbuyQty := actualbuyQty 
+totsellQty := actualsellQty 
+
+// === Plot MA ===
+plot(ma, title="Moving Average", color=color.orange, linewidth=3)
+
+// === Highlight Zones ===
+bgcolor(belowCond ? color.new(color.green, 85) : na)
+bgcolor(aboveCond ? color.new(color.red, 85) : na)
+
+// === Signal Markers ===
+plotshape(buySignal,
+     title="BUY",
+     location=location.belowbar,
+     style=shape.cross,
+     size=size.tiny,
+     color=color.blue,
+     text="1")
+
+plotshape(sellSignal,
+     title="SELL",
+     location=location.abovebar,
+     style=shape.cross,
+     size=size.tiny,
+     color=color.blue,
+     text="1")
+
+plotshape(buySignal1,
+     title="BUY",
+     location=location.belowbar,
+     style=shape.cross,
+     size=size.tiny,
+     color=color.black,
+     text="2")
+
+plotshape(sellSignal1,
+     title="SELL",
+     location=location.abovebar,
+     style=shape.cross,
+     size=size.tiny,
+     color=color.black,
+     text="2")
+
+plotshape(buySignal2,
+     title="BUY",
+     location=location.belowbar,
+     style=shape.cross,
+     size=size.tiny,
+     color=color.green,
+     text="3")
+
+plotshape(sellSignal2,
+     title="SELL",
+     location=location.abovebar,
+     style=shape.cross,
+     size=size.tiny,
+     color=color.green,
+     text="3")
+ 
+plotshape(buySignal3,
+     title="BUY",
+     location=location.belowbar,
+     style=shape.cross,
+     size=size.tiny,
+     color=color.green,
+     text="4")
+
+plotshape(sellSignal3,
+     title="SELL",
+     location=location.abovebar,
+     style=shape.cross,
+     size=size.tiny,
+     color=color.green,
+     text="4")
+
+plotshape(buySignal4,
+     title="BUY",
+     location=location.belowbar,
+     style=shape.cross,
+     size=size.tiny,
+     color=color.purple,
+     text="5")
+
+plotshape(sellSignal4,
+     title="SELL",
+     location=location.abovebar,
+     style=shape.cross,
+     size=size.tiny,
+     color=color.purple,
+     text="5")
+
+plotshape(buySignal5,
+     title="BUY",
+     location=location.belowbar,
+     style=shape.cross,
+     size=size.tiny,
+     color=color.red,
+     text="6")
+
+plotshape(sellSignal5,
+     title="SELL",
+     location=location.abovebar,
+     style=shape.cross,
+     size=size.tiny,
+     color=color.red,
+     text="6")
+
+plotshape(buySignal6,
+     title="BUY",
+     location=location.belowbar,
+     style=shape.cross,
+     size=size.tiny,
+     color=color.green,
+     text="7")
+
+plotshape(sellSignal6,
+     title="SELL",
+     location=location.abovebar,
+     style=shape.cross,
+     size=size.tiny,
+     color=color.green,
+     text="7")
+
+plotshape(buySignal7,
+     title="BUY",
+     location=location.belowbar,
+     style=shape.cross,
+     size=size.tiny,
+     color=color.blue,
+     text="8")
+
+plotshape(sellSignal7,
+     title="SELL",
+     location=location.abovebar,
+     style=shape.cross,
+     size=size.tiny,
+     color=color.blue,
+     text="8")
+
+plotshape(buySignal8,
+     title="BUY",
+     location=location.belowbar,
+     style=shape.cross,
+     size=size.tiny,
+     color=color.black,
+     text="9")
+
+plotshape(sellSignal8,
+     title="SELL",
+     location=location.abovebar,
+     style=shape.cross,
+     size=size.tiny,
+     color=color.black,
+     text="9")
+
+//label.new(totbuyQty, totsellQty, "Total Buy qty")
+plot(totbuyQty, title="Total Buy qty",display = display.data_window)
+plot(totsellQty, title="Total Sell qty",display = display.data_window)
+
+// === Alerts ===
+buyAny = buySignal or buySignal1 or buySignal2 or buySignal3 or buySignal4 or buySignal5 or buySignal6 or buySignal7 or buySignal8
+sellAny = sellSignal or sellSignal1 or sellSignal2 or sellSignal3 or sellSignal4 or sellSignal5 or sellSignal6 or sellSignal7 or sellSignal8
+
+int buyLevel = na
+
+if buySignal
+    buyLevel := 1
+else if buySignal1
+    buyLevel := 2
+else if buySignal2
+    buyLevel := 3
+else if buySignal3
+    buyLevel := 4
+else if buySignal4
+    buyLevel := 5
+else if buySignal5
+    buyLevel := 6
+else if buySignal6
+    buyLevel := 7
+else if buySignal7
+    buyLevel := 8
+else if buySignal8
+    buyLevel := 9
+
+if not na(buyLevel)
+    actualbuyQty := qtyMultiplier == "Y" ? buyQty * buyLevel : 1
+    strategy.entry("Long", strategy.long, actualbuyQty)
+
+int sellLevel = na
+
+if sellSignal
+    sellLevel := 1
+else if sellSignal1
+    sellLevel := 2
+else if sellSignal2
+    sellLevel := 3
+else if sellSignal3
+    sellLevel := 4
+else if sellSignal4
+    sellLevel := 5
+else if sellSignal5
+    sellLevel := 6
+else if sellSignal6
+    sellLevel := 7
+else if sellSignal7
+    sellLevel := 8
+else if sellSignal8
+    sellLevel := 9
+
+if not na(sellLevel)
+    actualsellQty := qtyMultiplier == "Y" ? sellQty * sellLevel : 1
+    strategy.entry("Short", strategy.short, actualsellQty)
+
+// Use a simple string concatenation to avoid str.format errors
+if buyAny
+    msg = '{"symbol":"' + syminfo.ticker + '", "action":"buy", "qty":"' + str.tostring(actualbuyQty) + '", "price":"' + str.tostring(close) + '"}'
+    alert(msg, alert.freq_once_per_bar_close)
+
+if sellAny
+    msg = '{"symbol":"' + syminfo.ticker + '", "action":"sell", "qty":"' + str.tostring(actualsellQty) + '", "price":"' + str.tostring(close) + '"}'
+    alert(msg, alert.freq_once_per_bar_close)
+//
+//
+======================================
+Pine script indicates syntax error withe following statement:
+plotshape(buyLevel > 0, title="BUY Signal", location=location.belowbar, style=shape.cross, color=color.blue, textcolor=color.blue, text=str.tostring(buyLevel))
+
+Error message:
+Cannot call "plotshape" with argument "text"="call "str.tostring" (series string)". An argument of "series string" type was used but a "const string"  is expecteD
+   
