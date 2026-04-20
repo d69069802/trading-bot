@@ -53,6 +53,9 @@ def webhook():
 
         # 6. Check Position
         position_qty = 0.0
+
+        print("symbol: ",symbol, "raw_symbol: ",raw_symbol) 
+
         try:
             position = api.get_position(symbol)
             position_qty = float(position.qty)
