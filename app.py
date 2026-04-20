@@ -67,7 +67,7 @@ def webhook():
 
         print("Converted symbol:", symbol)
         
-        side = data["action"]
+     #   side = data["action"]
 
 # FIX: Ensure qty is handled safely (converting string to float then int)
         try:
@@ -75,6 +75,8 @@ def webhook():
             qty = float(qty_raw)
         except (ValueError, TypeError):
             qty = 1
+
+        print("1 - qty: ",qty)
 
         try:
             position = api.get_position(symbol)
@@ -90,7 +92,7 @@ def webhook():
             print("Sell qty reduced to be the same as position qty") 
 
         qty = min(qty, position_qty)
-        print("qty: ",qty)
+        print("2 - qty: ",qty)
         
         
        # qty = float(data.get("qty", 1))
