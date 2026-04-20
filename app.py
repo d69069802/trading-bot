@@ -89,7 +89,9 @@ def webhook():
         try:
             position = api.get_position(symbol)
             position_qty = float(position.qty)
+            print("1. position qty:", position_qty)
         except APIError:
+            print("2. position qty:", position_qty)
             position_qty = 0
 
         print("action: ";action, "position_qty:", position_qty)
