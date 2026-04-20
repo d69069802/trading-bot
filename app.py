@@ -48,10 +48,13 @@ def webhook():
         # ===============================
         symbol_raw = symbol_raw.strip().upper()
 
-        if symbol_raw.endswith("USD") and "/" not in symbol_raw:
-            symbol = symbol_raw[:-3] + "/USD"
-        else:
-            symbol = symbol_raw
+        #if symbol_raw.endswith("USD") and "/" not in symbol_raw:
+        #    symbol = symbol_raw[:-3] + "/USD"
+        #else:
+        #    symbol = symbol_raw
+
+        raw_symbol = data.get("ticker", "").strip().upper()
+        symbol = raw_symbol
 
         # ===============================
         # 3️⃣ Safe Quantity Conversion
@@ -66,14 +69,23 @@ def webhook():
         # ===============================
         # 4️⃣ Position Check
         # ===============================
+        #try:
+        #    position = api.get_position(symbol)
+
+        from alpaca_trade_api.rest import APIError
+
         try:
             position = api.get_position(symbol)
             position_qty = float(position.qty)
         except APIError as e:
+
             if "position does not exist" in str(e):
                 position_qty = 0
             else:
                 raise
+
+        position_qty = float(position.qty)
+        
 
         # Prevent overselling
         if action == "sell":
