@@ -52,66 +52,51 @@ def webhook():
         #    symbol = symbol_raw[:-3] + "/USD"
         #else:
         #    symbol = symbol_raw
+#start
+symbol = data.get("ticker", "").strip().upper()
+action = data.get("action", "").lower()
 
-        raw_symbol = data.get("ticker", "").strip().upper()
-        symbol = raw_symbol
+if not symbol or action not in ["buy", "sell"]:
+    return jsonify({"error": "invalid symbol or action"}), 400
 
-        # ===============================
-        # 3️⃣ Safe Quantity Conversion
-        # ===============================
-        try:
-            qty = float(qty_raw)
-            if qty <= 0:
-                return jsonify({"error": "Qty must be positive"}), 400
-        except (ValueError, TypeError):
-            return jsonify({"error": "Invalid qty format"}), 400
+from alpaca_trade_api.rest import APIError
 
-        # ===============================
-        # 4️⃣ Position Check
-        # ===============================
-        #try:
-        #    position = api.get_position(symbol)
+# Default buy size
+default_qty = 0.01  # adjust for crypto
 
-        from alpaca_trade_api.rest import APIError
+if action == "buy":
+    qty = default_qty
 
-        try:
-            position = api.get_position(symbol)
-            position_qty = float(position.qty)
-        except APIError as e:
+elif action == "sell":
+    try:
+        position = api.get_position(symbol)
+        qty = float(position.qty)
+    except APIError:
+        return jsonify({"status": "no position to sell"}), 200
 
-            if "position does not exist" in str(e):
-                position_qty = 0
-            else:
-                raise
+    if qty <= 0:
+        return jsonify({"status": "no position to sell"}), 200
 
-        position_qty = float(position.qty)
-        
+# Submit order
+order = api.submit_order(
+    symbol=symbol,
+    qty=qty,
+    side=action,
+    type="market",
+    time_in_force="gtc"
+)
 
-        # Prevent overselling
-        if action == "sell":
-            if position_qty <= 0:
-                return jsonify({"status": "No position to sell"}), 200
-            qty = min(qty, position_qty)
+print(f"SUCCESS: {action.upper()} {qty} {symbol}")
 
-        # ===============================
-        # 5️⃣ Submit Order
-        # ===============================
-        order = api.submit_order(
-            symbol=symbol,
-            qty=qty,
-            side=action,
-            type="market",
-            time_in_force="gtc"
-        )
-
-        return jsonify({
-            "status": "order placed",
-            "symbol": symbol,
-            "side": action,
-            "qty": qty,
-            "order_id": order.id
+#return jsonify({"status": "order placed"}), 200
+return jsonify({
+        "status": "order placed",
+        "symbol": symbol,
+        "side": action,
+        "qty": qty,
+        "order_id": order.id
         }), 200
-
+#ending
     except Exception as e:
         print("CRITICAL ERROR:")
         print(traceback.format_exc())
