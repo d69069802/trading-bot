@@ -90,9 +90,8 @@ def webhook():
         if qty > position_qty:
             print("Sell qty: ", qty, "position qty: ", position_qty)
             print("Sell qty reduced to be the same as position qty") 
-
-        qty = min(qty, position_qty)
-        print("2 - qty: ",qty)
+            qty = min(qty, position_qty)
+            print("2 - qty: ",qty)
         
         
        # qty = float(data.get("qty", 1))
