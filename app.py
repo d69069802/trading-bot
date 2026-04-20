@@ -28,6 +28,13 @@ def webhook():
     raw_data = request.get_data(as_text=True)
     print(f"RAW DATA RECEIVED: '{raw_data}'")
 
+    data = request.get_json(force=True)
+
+    if not data:
+        return jsonify({"error": "Invalid JSON"}), 400
+
+        print("Parsed JSON:", data)
+
     data = request.get_json(force=True, silent=True)
     # ... rest of your code
 
@@ -51,8 +58,8 @@ def webhook():
         #symbol = data["ticker"].strip().upper().replace("USD", "/USD")
 
         print("RAW DATA:", data)
-        raw_symbol = data.get("ticker", "").strip()
-
+     #   raw_symbol = data.get("ticker", "").strip()
+        raw_symbol = data.get("ticker") or data.get("symbol"),strip()
         if raw_symbol.endswith("USD") and "/" not in raw_symbol:
             symbol = raw_symbol[:-3] + "/USD"
         else:
@@ -95,6 +102,8 @@ def webhook():
 
         # Execute Trade
         if action in ["buy", "sell"]:
+            print(f"Submitting order: {action} {qty} {symbol}")
+
             order = api.submit_order(
                 symbol=symbol,
                 qty=qty,
