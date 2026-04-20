@@ -87,7 +87,7 @@ def webhook():
         if action == "sell" and position_qty == 0:
             return jsonify({"status": "no position to sell"}), 200
     
-        if qty > position_qty:
+        if action == "sell" and qty > position_qty:
             print("Sell qty: ", qty, "position qty: ", position_qty)
             print("Sell qty reduced to be the same as position qty") 
             qty = min(qty, position_qty)
