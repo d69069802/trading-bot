@@ -84,6 +84,7 @@ def webhook():
         except:
             position_qty = 0
 
+        print("action: ";action, "position_qty:", position_qty)
         if action == "sell" and position_qty == 0:
             return jsonify({"status": "no position to sell"}), 200
     
