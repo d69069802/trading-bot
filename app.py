@@ -78,10 +78,18 @@ def webhook():
 
         print("1 - qty: ",qty)
 
+        #try:
+        #    position = api.get_position(symbol)
+        #    position_qty = float(position.qty)
+        #except:
+        #    position_qty = 0
+
+        from alpaca_trade_api.rest import APIError
+
         try:
             position = api.get_position(symbol)
             position_qty = float(position.qty)
-        except:
+        except APIError:
             position_qty = 0
 
         print("action: ";action, "position_qty:", position_qty)
