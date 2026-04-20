@@ -59,7 +59,7 @@ def webhook():
 
         print("RAW DATA:", data)
      #   raw_symbol = data.get("ticker", "").strip()
-        raw_symbol = data.get("ticker") or data.get("symbol"),strip()
+        raw_symbol = data.get("ticker") or data.get("symbol").strip()
         if raw_symbol.endswith("USD") and "/" not in raw_symbol:
             symbol = raw_symbol[:-3] + "/USD"
         else:
