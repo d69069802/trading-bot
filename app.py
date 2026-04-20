@@ -17,8 +17,13 @@ api = tradeapi.REST(
 )
 
 @app.route("/webhook", methods=["POST"])
-def webhook():
 
+def webhook():
+    raw_data = request.get_data(as_text=True)
+    print("RAW BODY:", raw_data)
+
+    print("HEADERS:", dict(request.headers))
+    
     try:
         # ===============================
         # 1️⃣ Read & Validate JSON
