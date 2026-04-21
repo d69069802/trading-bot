@@ -57,7 +57,8 @@ def webhook():
         print("symbol: ",symbol, "raw_symbol: ",raw_symbol) 
 
         try:
-            position = api.get_position(symbol)
+        #    position = api.get_position(symbol)
+            position = api.get_position(raw_symbol)
             position_qty = float(position.qty)
             print(f"Current position for {symbol}: {position_qty}")
         except Exception:
