@@ -16,6 +16,19 @@ api = tradeapi.REST(
     api_version="v2"
 )
 
+import os
+
+MODE = os.getenv("MODE", "PAPER")
+CONFIRM_LIVE = os.getenv("CONFIRM_LIVE", "NO")
+
+confirm_live = CONFIRM_LIVE == "YES"
+
+if MODE == "LIVE":
+    print("⚠ LIVE MODE ENABLED")
+
+if MODE == "LIVE" and CONFIRM_LIVE != "YES":
+    return {"error": "Live trading disabled by environment"}
+
 @app.route("/", methods=["GET"])
 def home():
     return "Server is running", 200
@@ -84,6 +97,7 @@ def webhook():
                 side=action,
                 type="market",
                 time_in_force="gtc"
+                "confirm_live": "YES"
             )
             print(f"SUCCESS: {action.upper()} order placed for {symbol}")
             return jsonify({"status": "order placed", "order_id": order.id}), 200
