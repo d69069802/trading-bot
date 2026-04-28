@@ -10,8 +10,8 @@ load_dotenv()
 app = Flask(__name__)
 
 api = tradeapi.REST(
-    os.getenv("ALPACA_KEY"),
-    os.getenv("ALPACA_SECRET"),
+    os.getenv("APCA_API_KEY_ID"),
+    os.getenv("APCA_API_SECRET_KEY"),
     os.getenv("BASE_URL"),
     api_version="v2"
 )
